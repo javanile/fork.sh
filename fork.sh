@@ -106,6 +106,7 @@ main () {
     parse LOCAL ${workdir} ${workdir}
     debug "Commit Forkfile retrieved updates"
     git commit -am "Fork updates done"
+    git push
 }
 
 main
