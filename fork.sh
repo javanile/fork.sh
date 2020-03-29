@@ -107,7 +107,6 @@ main () {
     debug "Commit Forkfile retrieved updates"
     echo $PWD
     git commit -am "Fork updates done"
-    git push
 }
 
 main
