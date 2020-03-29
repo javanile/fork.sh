@@ -56,7 +56,7 @@ clone () {
     debug "Processing: ${line}"
     tmp=$(mktemp -d -t fork-clone-XXXXXXXXXX)
     cd ${tmp}
-    git clone $1 REMOTE
+    git clone $1 REMOTE > /dev/null 2>&1 && true
     parse REMOTE ${tmp}/REMOTE $1
     rm -fr ${tmp}
 }
