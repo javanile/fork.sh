@@ -103,9 +103,9 @@ parse () {
 
 main () {
     git commit -am "Before fork updates" && true > /dev/null 2>&1
-    parse LOCAL ${workdir} ${workdir}
-    debug "Commit Forkfile retrieved updates"
-    git commit -am "Fork updates done"
+    #parse LOCAL ${workdir} ${workdir}
+    #debug "Commit Forkfile retrieved updates"
+    #git commit -am "Fork updates done"
 }
 
 main
