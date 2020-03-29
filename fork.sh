@@ -53,7 +53,7 @@ debug () {
 #
 ##
 clone () {
-    debug "Processing: ${line}"
+    debug "Fetching '$1'"
     tmp=$(mktemp -d -t fork-clone-XXXXXXXXXX)
     cd ${tmp}
     git clone $1 REMOTE > /dev/null 2>&1 && true
