@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ##
-# DIST.SH
+# FORK.SH
 #
 # The best way to zip your source code.
 #
