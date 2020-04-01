@@ -13,6 +13,6 @@ RUN chmod +x /usr/local/bin/fork.sh
 
 WORKDIR /app
 
-RUN git config credential.helper 'store --file=/app/.git/.git-credentials'
+RUN git config credential.helper 'store --file=/app/.git-credentials'
 
 CMD ["fork.sh"]
