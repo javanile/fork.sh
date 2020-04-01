@@ -67,6 +67,7 @@ clone () {
 copy () {
     debug "Coping '$1' to '${workdir}'"
     cp -R $1 ${workdir}/
+    chmod 777 ${workdir}/$1
 }
 
 ##
