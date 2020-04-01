@@ -13,6 +13,7 @@ RUN chmod +x /usr/local/bin/fork.sh
 
 WORKDIR /app
 
-RUN git config global credential.helper 'store --file=/app/.git/credentials'
+RUN git config --global credential.helper cache && \
+    git config --global credential.helper 'store --file /app/.git/credentials'
 
 CMD ["fork.sh"]

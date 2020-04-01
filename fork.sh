@@ -56,6 +56,7 @@ clone () {
     debug "Fetching '$1'"
     tmp=$(mktemp -d -t fork-clone-XXXXXXXXXX)
     cd ${tmp}
+    git credential-store --file ~/git.store store
     git clone $1 REMOTE # > /dev/null 2>&1 && true
     parse REMOTE ${tmp}/REMOTE $1
     rm -fr ${tmp}
