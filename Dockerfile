@@ -9,7 +9,7 @@ RUN apt-get update && \
     rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
 
 COPY fork.sh /usr/local/bin/
-RUN mkdir /tmp && chmod +x /usr/local/bin/fork.sh
+RUN chmod +x /usr/local/bin/fork.sh
 
 WORKDIR /app
 
