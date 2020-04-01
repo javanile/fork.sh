@@ -56,8 +56,8 @@ clone () {
     debug "Fetching '$1'"
     tmp=$(mktemp -d -t fork-clone-XXXXXXXXXX)
     cd ${tmp}
-    git clone $1 REMOTE # > /dev/null 2>&1 && true
-    parse REMOTE ${tmp}/REMOTE $1
+    git clone $1 LOCAL # > /dev/null 2>&1 && true
+    parse REMOTE ${tmp}/LOCAL $1
     rm -fr ${tmp}
 }
 
