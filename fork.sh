@@ -33,6 +33,7 @@ set -ef
 VERSION="0.1.0"
 
 workdir=${PWD}
+trace=${PWD}/Forkfile.trace
 
 ##
 #
@@ -52,12 +53,19 @@ debug () {
 ##
 #
 ##
+trace () {
+    echo $1 >> ${trace}
+}
+
+##
+#
+##
 clone () {
     branch=${2:-master}
     debug "Fetching '$1' branch '${branch}'"
     tmp=$(mktemp -d -t fork-clone-XXXXXXXXXX)
     cd ${tmp}
-    git clone -b ${branch} $1 LOCAL # > /dev/null 2>&1 && true
+    git clone -b ${branch} $1 LOCAL  > /dev/null 2>&1 && true
     parse REMOTE ${tmp}/LOCAL $1
     rm -fr ${tmp}
 }
@@ -66,9 +74,14 @@ clone () {
 #
 ##
 copy () {
-    debug "Coping '$1' to '${workdir}'"
-    cp -R $1 ${workdir}/
-    chmod 777 ${workdir}/$1
+    source=${workdir}/$1
+    override=$(grep -e "^COPY ${1}$" ${trace}) && true
+    if [[ ! -f "${source}" ]] || [[ ! -z "${override}" ]]; then
+        debug "Coping '$1' to '${workdir}' from '${PWD}'"
+        trace "COPY $1"
+        cp -R $1 ${workdir}/
+        chmod 777 ${workdir}/$1
+    fi
 }
 
 ##
@@ -85,7 +98,9 @@ parse () {
             instruction=$(echo ${line} | cut -d" " -f1)
             case "$1_${instruction}" in
                 "LOCAL_FROM"|"REMOTE_FROM")
+                    temp_pwd=${PWD}
                     clone ${line:5}
+                    cd ${temp_pwd}
                     ;;
                 "LOCAL_COPY")
                     debug "Skip COPY in LOCAL Forkfile line ${row}"
@@ -108,11 +123,13 @@ parse () {
 #
 ##
 main () {
+    echo "Start" > ${trace}
     git add . > /dev/null 2>&1 && true
-    git commit -am "Before fork updates..." > /dev/null 2>&1 && true
+    git commit -am "Forkfile start..." > /dev/null 2>&1 && true
     parse LOCAL ${workdir} ${workdir}
     git add . > /dev/null 2>&1 && true
-    git commit -am "Fork updates done." > /dev/null 2>&1 && true
+    git commit -am "Forkfile close." > /dev/null 2>&1 && true
+    #rm ${trace}
 }
 
 ## Entry-point
