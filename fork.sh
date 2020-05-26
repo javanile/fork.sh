@@ -30,9 +30,9 @@
 
 set -ef
 
-workdir=${PWD}
-
 VERSION="0.1.0"
+
+workdir=${PWD}
 
 ##
 #
@@ -53,10 +53,11 @@ debug () {
 #
 ##
 clone () {
-    debug "Fetching '$1'"
+    branch=${2:-master}
+    debug "Fetching '$1' branch '${branch}'"
     tmp=$(mktemp -d -t fork-clone-XXXXXXXXXX)
     cd ${tmp}
-    git clone $1 LOCAL # > /dev/null 2>&1 && true
+    git clone -b ${branch} $1 LOCAL # > /dev/null 2>&1 && true
     parse REMOTE ${tmp}/LOCAL $1
     rm -fr ${tmp}
 }
@@ -75,12 +76,13 @@ copy () {
 ##
 parse () {
     cd $2
+    debug "Workdir: ${PWD}"
     if [[ -e Forkfile ]]; then
         row=0
         while IFS= read line || [[ -n "${line}" ]]; do
             [[ -z "${line}" ]] && continue
             [[ "${line::1}" == "#" ]] && continue
-            instruction=$(echo ${line} | cut -d " " -f1)
+            instruction=$(echo ${line} | cut -d" " -f1)
             case "$1_${instruction}" in
                 "LOCAL_FROM"|"REMOTE_FROM")
                     clone ${line:5}
@@ -102,6 +104,9 @@ parse () {
     cd ${workdir}
 }
 
+##
+#
+##
 main () {
     git add . > /dev/null 2>&1 && true
     git commit -am "Before fork updates..." > /dev/null 2>&1 && true
@@ -110,4 +115,5 @@ main () {
     git commit -am "Fork updates done." > /dev/null 2>&1 && true
 }
 
+## Entry-point
 main
