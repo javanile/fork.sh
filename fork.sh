@@ -190,7 +190,7 @@ main () {
     parse LOCAL ${workdir} ${workdir}
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile close." > /dev/null 2>&1 && true
-    #rm ${trace}
+    rm ${trace}
     debug "Done."
 }
 

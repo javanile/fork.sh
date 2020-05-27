@@ -1,1 +1,1 @@
-FROM https://github.com/javanile/tool.sh.git
+FROM https://github.com/javanile/bash-package
