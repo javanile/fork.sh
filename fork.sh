@@ -168,6 +168,8 @@ parse () {
             esac
         done < Forkfile
     elif [[ "$1" == "LOCAL" ]] && [[ ! -z "${local_from}" ]]; then
+        debug "Write new 'Forkfile' on '${PWD}'"
+        echo "FROM ${local_from} ${local_branch}" > Forkfile
         temp_pwd=${PWD}
         clone ${local_from} ${local_branch}
         cd ${temp_pwd}
