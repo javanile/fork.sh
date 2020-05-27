@@ -134,7 +134,7 @@ copy () {
 ##
 parse () {
     cd $2
-    debug "Workdir: ${PWD}"
+    #debug "Workdir: ${PWD}"
     if [[ -e Forkfile ]]; then
         row=0
         while IFS= read line || [[ -n "${line}" ]]; do
@@ -177,7 +177,7 @@ parse () {
     else
         debug "Missing 'Forkfile' in '$3'."
     fi
-    cd ${workdir}
+    #cd ${workdir}
 }
 
 ##
