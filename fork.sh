@@ -44,12 +44,27 @@ usage () {
     echo "Executes FILE as a test case also collect each LCOV info and generate HTML report"
     echo ""
     echo "List of available options"
-    echo "  -f, --from EXT     Coverage of every *.EXT file (default: sh)"
-    echo "  -b, --branch EXT     Coverage of every *.EXT file (default: sh)"
+    echo "  -f, --from REPOSITORY   Coverage of every"
+    echo "  -b, --branch BRANCH     Coverage of every (require: '--from')"
     echo "  -h, --help              Display this help and exit"
     echo "  -v, --version           Display current version"
     echo ""
     echo "Documentation can be found at https://github.com/javanile/fork.sh"
+}
+
+##
+#
+##
+error () {
+    echo "[ERROR] $1"
+    exit 1
+}
+
+##
+#
+##
+debug () {
+    echo "[DEBUG] $1"
 }
 
 case "$(uname -s)" in
@@ -80,20 +95,9 @@ while true; do
     shift
 done
 
-##
-#
-##
-error () {
-    echo "[ERROR] $1"
-    exit 1
-}
-
-##
-#
-##
-debug () {
-    echo "[DEBUG] $1"
-}
+if [[ ! -z "${local_branch}" ]] && [[ -z "${local_from}" ]]; then
+    error "Required '--from' option with '--branch'"
+fi
 
 ##
 #
