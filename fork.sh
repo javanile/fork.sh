@@ -107,7 +107,7 @@ trace () {
 ##
 clone () {
     branch=${2:-master}
-    debug "Fetching '$1' branch '${branch}'"
+    debug "Fetching from '$1' at '${branch}' branch"
     tmp=$(mktemp -d -t fork-clone-XXXXXXXXXX)
     cd ${tmp}
     git clone -b ${branch} $1 LOCAL  > /dev/null 2>&1 && true
