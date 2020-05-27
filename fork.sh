@@ -167,7 +167,7 @@ parse () {
                     ;;
             esac
         done < Forkfile
-    elif [[ "$1" == "LOCAL" ]] && [[ ! -z "${from}" ]]; then
+    elif [[ "$1" == "LOCAL" ]] && [[ ! -z "${local_from}" ]]; then
         temp_pwd=${PWD}
         clone ${local_from} ${local_branch}
         cd ${temp_pwd}
