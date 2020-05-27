@@ -144,10 +144,11 @@ parse () {
             case "$1_${instruction}" in
                 "LOCAL_FROM")
                     temp_pwd=${PWD}
-                    if [[ -z "${from}" ]]; then
+                    if [[ -z "${local_from}" ]]; then
                         clone ${line:5}
                     else
-                        clone ${line:5}
+                        debug "Ignore LOCAL FROM due to command line '--from' option."
+                        clone ${local_from} ${local_branch}
                     fi
                     cd ${temp_pwd}
                     ;;
