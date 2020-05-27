@@ -64,7 +64,7 @@ case "$(uname -s)" in
 esac
 
 local_from=
-local_branch=master
+local_branch=
 options=$(${getopt} -n fork.sh -o f:b:vh -l from:,branch:,version,help -- "$@")
 
 eval set -- "${options}"
