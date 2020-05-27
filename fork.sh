@@ -38,6 +38,51 @@ trace=${PWD}/Forkfile.trace
 ##
 #
 ##
+usage () {
+    echo "Usage: ./fork.sh [OPTION]..."
+    echo ""
+    echo "Executes FILE as a test case also collect each LCOV info and generate HTML report"
+    echo ""
+    echo "List of available options"
+    echo "  -f, --from EXT     Coverage of every *.EXT file (default: sh)"
+    echo "  -b, --branch EXT     Coverage of every *.EXT file (default: sh)"
+    echo "  -h, --help              Display this help and exit"
+    echo "  -v, --version           Display current version"
+    echo ""
+    echo "Documentation can be found at https://github.com/javanile/fork.sh"
+}
+
+case "$(uname -s)" in
+    Darwin*)
+        getopt=/usr/local/opt/gnu-getopt/bin/getopt
+        escape='\x1B'
+        ;;
+    Linux|*)
+        getopt=/usr/bin/getopt
+        escape='\e'
+        ;;
+esac
+
+local_from=
+local_branch=master
+options=$(${getopt} -n fork.sh -o f:b:vh -l from:,branch:,version,help -- "$@")
+
+eval set -- "${options}"
+
+while true; do
+    case "$1" in
+        -f|--from) shift; local_from=$1 ;;
+        -b|--branch) shift; local_branch=$1 ;;
+        -v|--version) echo "LCOV.SH version ${VERSION}"; exit ;;
+        -h|--help) usage; exit ;;
+        --) shift; break ;;
+    esac
+    shift
+done
+
+##
+#
+##
 error () {
     echo "[ERROR] $1"
     exit 1
@@ -97,7 +142,16 @@ parse () {
             [[ "${line::1}" == "#" ]] && continue
             instruction=$(echo ${line} | cut -d" " -f1)
             case "$1_${instruction}" in
-                "LOCAL_FROM"|"REMOTE_FROM")
+                "LOCAL_FROM")
+                    temp_pwd=${PWD}
+                    if [[ -z "${from}" ]]; then
+                        clone ${line:5}
+                    else
+                        clone ${line:5}
+                    fi
+                    cd ${temp_pwd}
+                    ;;
+                "REMOTE_FROM")
                     temp_pwd=${PWD}
                     clone ${line:5}
                     cd ${temp_pwd}
@@ -113,6 +167,10 @@ parse () {
                     ;;
             esac
         done < Forkfile
+    elif [[ "$1" == "LOCAL" ]] && [[ ! -z "${from}" ]]; then
+        temp_pwd=${PWD}
+        clone ${local_from} ${local_branch}
+        cd ${temp_pwd}
     else
         debug "Missing 'Forkfile' in '$3'."
     fi
