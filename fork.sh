@@ -73,7 +73,7 @@ while true; do
     case "$1" in
         -f|--from) shift; local_from=$1 ;;
         -b|--branch) shift; local_branch=$1 ;;
-        -v|--version) echo "LCOV.SH version ${VERSION}"; exit ;;
+        -v|--version) echo "FORK.SH version ${VERSION}"; exit ;;
         -h|--help) usage; exit ;;
         --) shift; break ;;
     esac
