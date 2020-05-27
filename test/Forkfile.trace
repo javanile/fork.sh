@@ -1,1 +1,3 @@
 START /home/francesco/Develop/Javanile/fork.sh/test
+COPY .debug.yml
+COPY aa
