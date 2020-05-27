@@ -123,13 +123,14 @@ parse () {
 #
 ##
 main () {
-    echo "Start" > ${trace}
+    echo "START ${workdir}" > ${trace}
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile start..." > /dev/null 2>&1 && true
     parse LOCAL ${workdir} ${workdir}
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile close." > /dev/null 2>&1 && true
     #rm ${trace}
+    debug "Done."
 }
 
 ## Entry-point
