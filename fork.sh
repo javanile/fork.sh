@@ -35,6 +35,9 @@ VERSION="0.1.0"
 workdir=${PWD}
 trace=${PWD}/Forkfile.trace
 
+export FORKFILE_LOCAL_DIRNAME=$(dirname "${PWD}")
+export FORKFILE_LOCAL_BASENAME=$(basename "${PWD}")
+
 ##
 #
 ##
@@ -64,7 +67,7 @@ error () {
 #
 ##
 debug () {
-    echo "[DEBUG] $1"
+    echo "[DEBUG] $@"
 }
 
 case "$(uname -s)" in
@@ -123,13 +126,16 @@ clone () {
 #
 ##
 copy () {
-    source=${workdir}/$1
-    override=$(grep -e "^COPY ${1}$" ${trace}) && true
-    if [[ ! -f "${source}" ]] || [[ ! -z "${override}" ]]; then
-        debug "Coping '$1' to '${workdir}' from '${PWD}'"
-        trace "COPY $1"
-        cp -R $1 ${workdir}/
-        chmod 777 ${workdir}/$1
+    source=${1}
+    target_name=${2}
+    [[ -z ${target_name} ]] && target_name=${1}
+    target=${workdir}/${target_name}
+    override=$(grep -e "^COPY ${source}$" ${trace}) && true
+    if [[ ! -f "${target}" ]] || [[ ! -z "${override}" ]]; then
+        debug "Coping '${source}' to '${target}' from '${PWD}'"
+        trace "COPY ${soucr}"
+        cp -R ${source} ${target}
+        chmod 777 ${target}
     fi
 }
 
@@ -141,11 +147,17 @@ parse () {
     #debug "Workdir: ${PWD}"
     if [[ -e Forkfile ]]; then
         row=0
+        forkfile=${PWD}/Forkfile.0
+        export FORKFILE_REMOTE_BASENAME=rbn
+        envsubst < Forkfile > ${forkfile}
         while IFS= read line || [[ -n "${line}" ]]; do
             [[ -z "${line}" ]] && continue
             [[ "${line::1}" == "#" ]] && continue
             instruction=$(echo ${line} | cut -d" " -f1)
             case "$1_${instruction}" in
+                "LOCAL_DEBUG"|"REMOTE_DEBUG")
+                    debug ${line:6}
+                    ;;
                 "LOCAL_FROM")
                     temp_pwd=${PWD}
                     if [[ -z "${local_from}" ]]; then
@@ -171,7 +183,8 @@ parse () {
                     error "Forkfile parse error line ${row}: unknown instruction: ${instruction}"
                     ;;
             esac
-        done < Forkfile
+        done < ${forkfile}
+        [[ -f ${forkfile} ]] && rm ${forkfile}
     elif [[ "$1" == "LOCAL" ]] && [[ ! -z "${local_from}" ]]; then
         debug "Write new 'Forkfile' on '${PWD}'"
         echo "FROM ${local_from} ${local_branch}" > Forkfile
