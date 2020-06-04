@@ -1,5 +1,5 @@
 
-BIN ?= lcov.sh
+BIN ?= fork.sh
 PREFIX ?= /usr/local
 
 install:
