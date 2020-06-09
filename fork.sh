@@ -58,16 +58,23 @@ usage () {
 ##
 #
 ##
+debug () {
+    echo " ---> $@"
+}
+
+##
+#
+##
 error () {
-    echo "[ERROR] $1"
+    echo "[ERR] $1"
     exit 1
 }
 
 ##
 #
 ##
-debug () {
-    echo "    [>] $@"
+log () {
+    echo "[LOG] $@"
 }
 
 case "$(uname -s)" in
@@ -163,7 +170,7 @@ parse () {
                     if [[ -z "${local_from}" ]]; then
                         clone ${line:5}
                     else
-                        debug "Ignore LOCAL FROM due to command line '--from' option."
+                        log "Ignore LOCAL FROM due to command line '--from' option."
                         clone ${local_from} ${local_branch}
                     fi
                     cd ${temp_pwd}
@@ -174,7 +181,7 @@ parse () {
                     cd ${temp_pwd}
                     ;;
                 LOCAL_COPY)
-                    debug "Skip COPY in LOCAL Forkfile line ${row}"
+                    log "Skip COPY in LOCAL Forkfile line ${row}"
                     ;;
                 REMOTE_COPY)
                     copy ${line:5}
@@ -186,13 +193,13 @@ parse () {
         done < ${forkfile}
         [[ -f ${forkfile} ]] && rm ${forkfile}
     elif [[ "$1" == "LOCAL" ]] && [[ ! -z "${local_from}" ]]; then
-        debug "Write new 'Forkfile' on '${PWD}'"
+        log "Write new 'Forkfile' on '${PWD}'"
         echo "FROM ${local_from} ${local_branch}" > Forkfile
         temp_pwd=${PWD}
         clone ${local_from} ${local_branch}
         cd ${temp_pwd}
     else
-        debug "Missing 'Forkfile' in '$3'."
+        log "Missing 'Forkfile' in '$3'."
     fi
     #cd ${workdir}
 }
@@ -208,7 +215,7 @@ main () {
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile close." > /dev/null 2>&1 && true
     rm ${trace}
-    debug "Done."
+    log "Done."
 }
 
 ## Entry-point

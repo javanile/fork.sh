@@ -2,7 +2,7 @@
 
 git config credential.helper 'cache --timeout=3000'
 
-cd fixtures
+cd test/fixtures
 
 cd forkfile
 git add .
