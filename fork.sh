@@ -67,7 +67,7 @@ error () {
 #
 ##
 debug () {
-    echo "[DEBUG] $@"
+    echo "    [>] $@"
 }
 
 case "$(uname -s)" in
@@ -155,10 +155,10 @@ parse () {
             [[ "${line::1}" == "#" ]] && continue
             instruction=$(echo ${line} | cut -d" " -f1)
             case "$1_${instruction}" in
-                "LOCAL_DEBUG"|"REMOTE_DEBUG")
+                LOCAL_DEBUG|REMOTE_DEBUG)
                     debug ${line:6}
                     ;;
-                "LOCAL_FROM")
+                LOCAL_FROM)
                     temp_pwd=${PWD}
                     if [[ -z "${local_from}" ]]; then
                         clone ${line:5}
@@ -168,15 +168,15 @@ parse () {
                     fi
                     cd ${temp_pwd}
                     ;;
-                "REMOTE_FROM")
+                REMOTE_FROM)
                     temp_pwd=${PWD}
                     clone ${line:5}
                     cd ${temp_pwd}
                     ;;
-                "LOCAL_COPY")
+                LOCAL_COPY)
                     debug "Skip COPY in LOCAL Forkfile line ${row}"
                     ;;
-                "REMOTE_COPY")
+                REMOTE_COPY)
                     copy ${line:5}
                     ;;
                 *)
