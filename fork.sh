@@ -58,7 +58,7 @@ usage () {
 ##
 #
 ##
-debug () {
+log () {
     echo " ---> $@"
 }
 
@@ -66,15 +66,15 @@ debug () {
 #
 ##
 error () {
-    echo "[ERR] $1"
+    echo "ERROR $1"
     exit 1
 }
 
 ##
 #
 ##
-log () {
-    echo "[LOG] $@"
+debug () {
+    echo "DEBUG $@"
 }
 
 case "$(uname -s)" in
@@ -139,7 +139,7 @@ copy () {
     target=${workdir}/${target_name}
     override=$(grep -e "^COPY ${source}$" ${trace}) && true
     if [[ ! -f "${target}" ]] || [[ ! -z "${override}" ]]; then
-        debug "Coping '${source}' to '${target}' from '${PWD}'"
+        log "Coping '${source}' to '${target}' from '${PWD}'"
         trace "COPY ${soucr}"
         cp -R ${source} ${target}
         chmod 777 ${target}
@@ -155,7 +155,7 @@ parse () {
     if [[ -e Forkfile ]]; then
         row=0
         forkfile=${PWD}/Forkfile.0
-        export FORKFILE_REMOTE_BASENAME=rbn
+        export Forkfile[from]=rbn
         envsubst < Forkfile > ${forkfile}
         while IFS= read line || [[ -n "${line}" ]]; do
             [[ -z "${line}" ]] && continue
@@ -208,6 +208,10 @@ parse () {
 #
 ##
 main () {
+    if [[ -z "$(command -v envsubst)" ]]; then
+        echo "lcov.sh: missing 'envsubst' command on your system." >&2
+        exit 1
+    fi
     echo "START ${workdir}" > ${trace}
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile start..." > /dev/null 2>&1 && true
@@ -215,7 +219,7 @@ main () {
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile close." > /dev/null 2>&1 && true
     rm ${trace}
-    log "Done."
+    echo "Done."
 }
 
 ## Entry-point
