@@ -12,3 +12,8 @@ release:
 	git add .
 	git commit -am "Release"
 	git push
+	docker build -t javanile/fork.sh .
+	docker push javanile/fork.sh:latest
+
+tdd:
+	bash test/inheritance-test.sh
