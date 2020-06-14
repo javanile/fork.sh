@@ -35,7 +35,7 @@ failure() {
   local msg=$2
   echo "Failed at $lineno: $msg"
 }
-trap 'failure ${LINENO} "$BASH_COMMAND"' 0
+#trap 'failure ${LINENO} "$BASH_COMMAND"' 0
 
 VERSION="0.1.0"
 
@@ -95,14 +95,14 @@ esac
 
 local_from=
 local_branch=
-repo=^[A-Za-z_\.-]+/[A-Za-z_\.-]+$
+package=^[A-Za-z_\.-]+/[A-Za-z_\.-]+$
 options=$(${getopt} -n fork.sh -o f:b:vh -l from:,branch:,version,help -- "$@")
 
 eval set -- "${options}"
 
 while true; do
     case "$1" in
-        -f|--from) shift; [[ "$1" =~ ${repo} ]] && local_from=https://github.com/$1 || local_from=$1 ;;
+        -f|--from) shift; [[ "$1" =~ ${package} ]] && local_from=https://github.com/$1 || local_from=$1 ;;
         -b|--branch) shift; local_branch=$1 ;;
         -v|--version) echo "FORK.SH version ${VERSION}"; exit ;;
         -h|--help) usage; exit ;;
@@ -130,8 +130,8 @@ clone () {
     log "Fetching from '$1' at '${branch}' branch"
     tmp=$(mktemp -d -t fork-clone-XXXXXXXXXX)
     cd ${tmp}
-    git clone -b ${branch} $1 LOCAL > /dev/null 2>&1 && true
-    #git clone -b ${branch} $1 LOCAL && true
+    #git clone -b ${branch} $1 LOCAL > /dev/null 2>&1 && true
+    git clone -b ${branch} $1 LOCAL || true
     parse REMOTE $1 ${tmp}/LOCAL
     rm -fr ${tmp}
 }
@@ -156,6 +156,21 @@ copy () {
 ##
 #
 ##
+merge () {
+    source=${1}
+    target_name=${2}
+    [[ -z ${target_name} ]] && target_name=${1}
+    target=${workdir}/${target_name}
+    log "Merging '${source}' to '${target}' from '${PWD}'"
+    tmp=$(mktemp -t merge-diff-XXXXXXXXXX)
+    diff --line-format %L ${target} ${source} > ${tmp} || true
+    cp ${tmp} ${target}
+    rm ${tmp}
+}
+
+##
+#
+##
 parse () {
     cd $3
     #debug "Workdir: ${PWD}"
@@ -171,7 +186,7 @@ parse () {
             instruction=$(echo ${line} | cut -d" " -f1)
             case "$1_${instruction}" in
                 LOCAL_DUMP|REMOTE_DUMP)
-                    log "${@}"
+                    log DUMP "${@}"
                     printenv | grep -E '^Forkfile_' | sort
                     ;;
                 LOCAL_DEBUG|REMOTE_DEBUG)
@@ -197,6 +212,12 @@ parse () {
                     ;;
                 REMOTE_COPY)
                     copy ${line:5}
+                    ;;
+                LOCAL_MERGE)
+                    log "Skip MERGE in LOCAL Forkfile line ${row}"
+                    ;;
+                REMOTE_MERGE)
+                    merge ${line:6}
                     ;;
                 *)
                     error "Forkfile parse error line ${row}: unknown instruction: ${instruction}"
