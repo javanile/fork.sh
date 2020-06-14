@@ -63,14 +63,14 @@ usage () {
 #
 ##
 log () {
-    echo " ---> $@"
+    echo " ----> $@"
 }
 
 ##
 #
 ##
 error () {
-    echo -e "${escape}[1m${escape}[31mERROR${escape}[0m ${@}"
+    echo -e "${escape}[1m${escape}[31mERROR>${escape}[0m ${@}"
     exit 1
 }
 
@@ -78,7 +78,7 @@ error () {
 #
 ##
 debug () {
-    echo "DEBUG $@"
+    echo -e "${escape}[1m${escape}[33mDEBUG>${escape}[0m ${@}"
 }
 
 case "$(uname -s)" in
