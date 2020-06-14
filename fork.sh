@@ -102,7 +102,7 @@ eval set -- "${options}"
 
 while true; do
     case "$1" in
-        -f|--from) shift; [[ "$1" =~ "${repo}" ]] && local_from=https://github.com/$1 || local_from=$1 ;;
+        -f|--from) shift; [[ "$1" =~ ${repo} ]] && local_from=https://github.com/$1 || local_from=$1 ;;
         -b|--branch) shift; local_branch=$1 ;;
         -v|--version) echo "FORK.SH version ${VERSION}"; exit ;;
         -h|--help) usage; exit ;;
