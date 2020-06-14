@@ -102,7 +102,7 @@ eval set -- "${options}"
 
 while true; do
     case "$1" in
-        -f|--from) shift; [[ "$1" =~ ${package} ]] && local_from=https://github.com/$1 || local_from=$1 ;;
+        -f|--from) shift; local_from=$1 ;;
         -b|--branch) shift; local_branch=$1 ;;
         -v|--version) echo "FORK.SH version ${VERSION}"; exit ;;
         -h|--help) usage; exit ;;
@@ -126,13 +126,18 @@ trace () {
 #
 ##
 clone () {
+    [[ "$1" =~ ${package} ]] && repository=https://github.com/$1 || repository=$1
     branch=${2:-master}
     log "Fetch from '$1' at '${branch}' branch."
     tmp=$(mktemp -d -t fork-clone-XXXXXXXXXX)
     cd ${tmp}
     #git clone -b ${branch} $1 LOCAL > /dev/null 2>&1 && true
-    git clone -b ${branch} $1 LOCAL || true
-    [[ -d "${tmp}/LOCAL" ]] && parse REMOTE $1 ${tmp}/LOCAL
+    git clone -b ${branch} ${repository} LOCAL || true
+    if [[ -d "${tmp}/LOCAL" ]]; then
+        parse REMOTE $1 ${tmp}/LOCAL
+    else
+        error ""
+    fi
     rm -fr ${tmp}
 }
 
