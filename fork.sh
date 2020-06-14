@@ -3,7 +3,7 @@
 ##
 # FORK.SH
 #
-# The best way to zip your source code.
+# Maintenance strategy for prototype-based projects.
 #
 # Copyright (c) 2020 Francesco Bianco <bianco@javanile.org>
 #
