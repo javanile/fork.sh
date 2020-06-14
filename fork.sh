@@ -70,7 +70,7 @@ log () {
 #
 ##
 error () {
-    echo -e "${escape}[1m${escape}[31mERROR:${escape}[0m ${@}"
+    echo -e "${escape}[1m${escape}[31mERROR>${escape}[0m ${@}"
     exit 1
 }
 
@@ -78,7 +78,7 @@ error () {
 #
 ##
 debug () {
-    echo -e "${escape}[1m${escape}[33mDEBUG:${escape}[0m ${@}"
+    echo -e "${escape}[1m${escape}[33mDEBUG>${escape}[0m ${@}"
 }
 
 case "$(uname -s)" in
@@ -262,7 +262,7 @@ main () {
         local_from=${local}
     fi
     trace=${workdir}/Forkfile.trace
-    echo "Forkfile..."
+    #echo "Forkfile..."
     echo "START ${workdir}" > ${trace}
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile start..." > /dev/null 2>&1 && true
