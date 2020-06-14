@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-git config credential.helper 'cache --timeout=3000'
+git config --global credential.helper 'cache --timeout=3000'
 
 [[ ! -d test/fixtures ]] && mkdir -p test/fixtures
 cd test/fixtures

@@ -30,13 +30,16 @@
 
 set -ef
 
+failure() {
+  local lineno=$1
+  local msg=$2
+  echo "Failed at $lineno: $msg"
+}
+trap 'failure ${LINENO} "$BASH_COMMAND"' 0
+
 VERSION="0.1.0"
 
 workdir=${PWD}
-trace=${PWD}/Forkfile.trace
-
-export FORKFILE_LOCAL_DIRNAME=$(dirname "${PWD}")
-export FORKFILE_LOCAL_BASENAME=$(basename "${PWD}")
 
 ##
 #
@@ -49,6 +52,7 @@ usage () {
     echo "List of available options"
     echo "  -f, --from REPOSITORY   Coverage of every"
     echo "  -b, --branch BRANCH     Coverage of every (require: '--from')"
+    echo "  -l, --log               Display log information"
     echo "  -h, --help              Display this help and exit"
     echo "  -v, --version           Display current version"
     echo ""
@@ -66,7 +70,7 @@ log () {
 #
 ##
 error () {
-    echo "ERROR $1"
+    echo -e "${escape}[1m${escape}[31mERROR${escape}[0m ${@}"
     exit 1
 }
 
@@ -79,7 +83,8 @@ debug () {
 
 case "$(uname -s)" in
     Darwin*)
-        getopt=/usr/local/opt/gnu-getopt/bin/getopt
+        getdep=''
+        getopt='/usr/local/opt/gnu-getopt/bin/getopt'
         escape='\x1B'
         ;;
     Linux|*)
@@ -96,7 +101,14 @@ eval set -- "${options}"
 
 while true; do
     case "$1" in
-        -f|--from) shift; local_from=$1 ;;
+        -f|--from)
+            shift
+            if [[ "$1" =~ ^[A-Za-z_\.-]+/[A-Za-z_\.-]+$ ]]; then
+                local_from=https://github.com/$1
+            else
+                local_from=$1
+            fi
+            ;;
         -b|--branch) shift; local_branch=$1 ;;
         -v|--version) echo "FORK.SH version ${VERSION}"; exit ;;
         -h|--help) usage; exit ;;
@@ -121,11 +133,12 @@ trace () {
 ##
 clone () {
     branch=${2:-master}
-    debug "Fetching from '$1' at '${branch}' branch"
+    log "Fetching from '$1' at '${branch}' branch"
     tmp=$(mktemp -d -t fork-clone-XXXXXXXXXX)
     cd ${tmp}
-    git clone -b ${branch} $1 LOCAL  > /dev/null 2>&1 && true
-    parse REMOTE ${tmp}/LOCAL $1
+    git clone -b ${branch} $1 LOCAL > /dev/null 2>&1 && true
+    #git clone -b ${branch} $1 LOCAL && true
+    parse REMOTE $1 ${tmp}/LOCAL
     rm -fr ${tmp}
 }
 
@@ -150,20 +163,25 @@ copy () {
 #
 ##
 parse () {
-    cd $2
+    cd $3
     #debug "Workdir: ${PWD}"
     if [[ -e Forkfile ]]; then
-        row=0
-        forkfile=${PWD}/Forkfile.0
-        export Forkfile[from]=rbn
+        local row=0
+        local forkfile=${PWD}/Forkfile.0
+        export Forkfile_from=rbn
         envsubst < Forkfile > ${forkfile}
         while IFS= read line || [[ -n "${line}" ]]; do
+            ((row=row+1))
             [[ -z "${line}" ]] && continue
             [[ "${line::1}" == "#" ]] && continue
             instruction=$(echo ${line} | cut -d" " -f1)
             case "$1_${instruction}" in
+                LOCAL_DUMP|REMOTE_DUMP)
+                    log "${@}"
+                    printenv | grep -E '^Forkfile_' | sort
+                    ;;
                 LOCAL_DEBUG|REMOTE_DEBUG)
-                    debug ${line:6}
+                    log ${line:6}
                     ;;
                 LOCAL_FROM)
                     temp_pwd=${PWD}
@@ -191,7 +209,7 @@ parse () {
                     ;;
             esac
         done < ${forkfile}
-        [[ -f ${forkfile} ]] && rm ${forkfile}
+        #[[ -f ${forkfile} ]] && rm ${forkfile}
     elif [[ "$1" == "LOCAL" ]] && [[ ! -z "${local_from}" ]]; then
         log "Write new 'Forkfile' on '${PWD}'"
         echo "FROM ${local_from} ${local_branch}" > Forkfile
@@ -208,14 +226,27 @@ parse () {
 #
 ##
 main () {
-    if [[ -z "$(command -v envsubst)" ]]; then
-        echo "lcov.sh: missing 'envsubst' command on your system." >&2
+    if [[ -z "$(command -v git)" ]]; then
+        echo "fork.sh: missing 'git' command on your system." >&2
         exit 1
     fi
+    if [[ -z "$(command -v envsubst)" ]]; then
+        echo "fork.sh: missing 'envsubst' command on your system." >&2
+        exit 1
+    fi
+    if [[ ! -d ${workdir}/.git ]]; then
+        echo "fork.sh: not a git repository." >&2
+        exit 1
+    fi
+    trace=${workdir}/Forkfile.trace
+    local=$(git config --get remote.origin.url)
     echo "START ${workdir}" > ${trace}
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile start..." > /dev/null 2>&1 && true
-    parse LOCAL ${workdir} ${workdir}
+    export Forkfile_workdir=${workdir}
+    export Forkfile_dirname=$(dirname "${workdir}")
+    export Forkfile_name=$(basename "${workdir}")
+    parse LOCAL ${local} ${workdir}
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile close." > /dev/null 2>&1 && true
     rm ${trace}
