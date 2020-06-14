@@ -255,6 +255,7 @@ main () {
     fi
     trace=${workdir}/Forkfile.trace
     local=$(git config --get remote.origin.url)
+    echo "Forkfile..."
     echo "START ${workdir}" > ${trace}
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile start..." > /dev/null 2>&1 && true
