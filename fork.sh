@@ -50,11 +50,11 @@ usage () {
     echo "Executes FILE as a test case also collect each LCOV info and generate HTML report"
     echo ""
     echo "List of available options"
-    echo "  -f, --from REPOSITORY   Coverage of every"
-    echo "  -b, --branch BRANCH     Coverage of every (require: '--from')"
-    echo "  -l, --log               Display log information"
-    echo "  -h, --help              Display this help and exit"
+    echo "  -F, --from REPOSITORY   Coverage of every"
+    echo "  -B, --branch BRANCH     Coverage of every"
+    echo "  -V, --verbose           Display log information"
     echo "  -v, --version           Display current version"
+    echo "  -h, --help              Display this help and exit"
     echo ""
     echo "Documentation can be found at https://github.com/javanile/fork.sh"
 }
@@ -93,27 +93,25 @@ case "$(uname -s)" in
         ;;
 esac
 
+verbose=
 local_from=
 local_branch=
 package=^[A-Za-z_\.-]+/[A-Za-z_\.-]+$
-options=$(${getopt} -n fork.sh -o f:b:vh -l from:,branch:,version,help -- "$@")
+options=$(${getopt} -n fork.sh -o F:B:Vvh -l from:,branch:,verbose,version,help -- "$@")
 
 eval set -- "${options}"
 
 while true; do
     case "$1" in
-        -f|--from) shift; local_from=$1 ;;
-        -b|--branch) shift; local_branch=$1 ;;
+        -F|--from) shift; local_from=$1 ;;
+        -B|--branch) shift; local_branch=$1 ;;
+        -V|--verbose) verbose=1 ;;
         -v|--version) echo "FORK.SH version ${VERSION}"; exit ;;
         -h|--help) usage; exit ;;
         --) shift; break ;;
     esac
     shift
 done
-
-if [[ ! -z "${local_branch}" ]] && [[ -z "${local_from}" ]]; then
-    error "Required '--from' option with '--branch'"
-fi
 
 ##
 #
@@ -258,8 +256,12 @@ main () {
         echo "fork.sh: not a git repository." >&2
         exit 1
     fi
-    trace=${workdir}/Forkfile.trace
     local=$(git config --get remote.origin.url)
+    if [[ ! -z "${local_branch}" ]] && [[ -z "${local_from}" ]]; then
+        debug "set local_from by default"
+        local_from=${local}
+    fi
+    trace=${workdir}/Forkfile.trace
     echo "Forkfile..."
     echo "START ${workdir}" > ${trace}
     git add . > /dev/null 2>&1 && true

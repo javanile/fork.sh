@@ -1,9 +1,13 @@
+#!make
 
 BIN ?= fork.sh
 PREFIX ?= /usr/local
+## Acconti
 
 install:
 	install ./fork.sh $(PREFIX)/bin/$(BIN)
+tommaso:
+	ci siamo
 
 uninstall:
 	rm -f $(PREFIX)/bin/$(BIN)
