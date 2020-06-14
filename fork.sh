@@ -95,20 +95,14 @@ esac
 
 local_from=
 local_branch=
+repo=^[A-Za-z_\.-]+/[A-Za-z_\.-]+$
 options=$(${getopt} -n fork.sh -o f:b:vh -l from:,branch:,version,help -- "$@")
 
 eval set -- "${options}"
 
 while true; do
     case "$1" in
-        -f|--from)
-            shift
-            if [[ "$1" =~ ^[A-Za-z_\.-]+/[A-Za-z_\.-]+$ ]]; then
-                local_from=https://github.com/$1
-            else
-                local_from=$1
-            fi
-            ;;
+        -f|--from) shift; [[ "$1" =~ "${repo}" ]] && local_from=https://github.com/$1 || local_from=$1 ;;
         -b|--branch) shift; local_branch=$1 ;;
         -v|--version) echo "FORK.SH version ${VERSION}"; exit ;;
         -h|--help) usage; exit ;;
