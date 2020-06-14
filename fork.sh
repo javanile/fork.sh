@@ -127,12 +127,12 @@ trace () {
 ##
 clone () {
     branch=${2:-master}
-    log "Fetching from '$1' at '${branch}' branch"
+    log "Fetch from '$1' at '${branch}' branch."
     tmp=$(mktemp -d -t fork-clone-XXXXXXXXXX)
     cd ${tmp}
     #git clone -b ${branch} $1 LOCAL > /dev/null 2>&1 && true
     git clone -b ${branch} $1 LOCAL || true
-    parse REMOTE $1 ${tmp}/LOCAL
+    [[ -d "${tmp}/LOCAL" ]] && parse REMOTE $1 ${tmp}/LOCAL
     rm -fr ${tmp}
 }
 
