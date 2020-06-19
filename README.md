@@ -1,7 +1,7 @@
 # FORK.SH
 
 
-## Get started
+## Installation
 
 ```
 ## with cURL and BASH
@@ -17,6 +17,13 @@ docker run --rm -v $PWD:/app -ti javanile/fork.sh
 ## with Dorker for Windows
 docker run --rm -v %cd%:/app -ti javanile/fork.sh
 ```
+
+## Usage
+
+### Forkfile magic variables
+
+-  `Forkfile_name`  
+
 
 ## Url shortening
 
