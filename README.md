@@ -28,5 +28,7 @@ docker run --rm -v %cd%:/app -ti javanile/fork.sh
 ## Shorturl
 
 ```bash
-curl -i "https://git.io" -d "code=fork.sh" -d "url=https://raw.githubusercontent.com/javanile/fork.sh/master/fork.sh"
+curl -i "https://git.io" \
+     -d "url=https://raw.githubusercontent.com/javanile/fork.sh/master/fork.sh" \
+     -d "code=fork.sh"
 ```
