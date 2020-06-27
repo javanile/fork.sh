@@ -100,11 +100,12 @@ while true; do
         -b|--branch) shift; local_branch=$1 ;;
         -v|--version) echo "FORK.SH version ${VERSION}"; exit ;;
         -h|--help) usage; exit ;;
-        ?) echo $1 ;;
         --) shift; break ;;
     esac
     shift
 done
+
+echo $1
 
 #if [[ -z ]]
 
