@@ -1,5 +1,0 @@
-## -------- ##
-## Forkfile ##
-## -------- ##
-
-FROM https://github.com/javanile/bash-package
