@@ -3,7 +3,7 @@
 ##
 # FORK.SH
 #
-# The best way to zip your source code.
+# Project prototyping special.
 #
 # Copyright (c) 2020 Francesco Bianco <bianco@javanile.org>
 #
@@ -33,7 +33,7 @@ set -ef
 VERSION="0.1.0"
 
 workdir=${PWD}
-trace=${PWD}/Forkfile.trace
+trace=$(mktemp -t fork-trace-XXXXXXXXXX)
 
 export FORKFILE_LOCAL_DIRNAME=$(dirname "${PWD}")
 export FORKFILE_LOCAL_BASENAME=$(basename "${PWD}")
@@ -44,11 +44,11 @@ export FORKFILE_LOCAL_BASENAME=$(basename "${PWD}")
 usage () {
     echo "Usage: ./fork.sh [OPTION]..."
     echo ""
-    echo "Executes FILE as a test case also collect each LCOV info and generate HTML report"
+    echo "Parse Forkfile and align from "
     echo ""
     echo "List of available options"
     echo "  -f, --from REPOSITORY   Coverage of every"
-    echo "  -b, --branch BRANCH     Coverage of every (require: '--from')"
+    echo "  -b, --branch BRANCH     "
     echo "  -h, --help              Display this help and exit"
     echo "  -v, --version           Display current version"
     echo ""
@@ -108,6 +108,8 @@ done
 if [[ ! -z "${local_branch}" ]] && [[ -z "${local_from}" ]]; then
     error "Required '--from' option with '--branch'"
 fi
+
+
 
 ##
 #
