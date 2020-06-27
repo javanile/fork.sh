@@ -100,10 +100,14 @@ while true; do
         -b|--branch) shift; local_branch=$1 ;;
         -v|--version) echo "FORK.SH version ${VERSION}"; exit ;;
         -h|--help) usage; exit ;;
+        ?) echo $1 ;;
         --) shift; break ;;
     esac
     shift
 done
+
+#if [[ -z ]]
+
 
 if [[ ! -z "${local_branch}" ]] && [[ -z "${local_from}" ]]; then
     error "Required '--from' option with '--branch'"
@@ -123,7 +127,7 @@ trace () {
 ##
 clone () {
     branch=${2:-master}
-    debug "Fetching from '$1' at '${branch}' branch"
+    debug "Fetching '$1' from '${branch}' branch"
     tmp=$(mktemp -d -t fork-clone-XXXXXXXXXX)
     cd ${tmp}
     git clone -b ${branch} $1 LOCAL  > /dev/null 2>&1 && true
