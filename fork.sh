@@ -133,7 +133,7 @@ clone () {
     [[ "$1" =~ ${package} ]] && repository=https://github.com/$1 || repository=$1
     branch=${2:-master}
     log "Opening '${repository}' due to validate integrity."
-    git ls-remote ${repository}
+    git ls-remote ${repository} || true
     log "Fetching '$1' from '${branch}' branch."
     tmp=$(mktemp -d -t fork-clone-XXXXXXXXXX)
     cd ${tmp}
