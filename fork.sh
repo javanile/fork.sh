@@ -155,10 +155,12 @@ copy () {
     target_name=${2}
     [[ -z ${target_name} ]] && target_name=${1}
     target=${workdir}/${target_name}
+    target_dir="$(dirname "${target}")"
     override=$(grep -e "^COPY ${source}$" ${trace}) && true
     if [[ ! -f "${target}" ]] || [[ ! -z "${override}" ]]; then
         log "Coping '${source}' to '${target}' from '${PWD}'"
-        trace "COPY ${soucr}"
+        trace "COPY ${source}"
+        [[ -d "${target_dir}" ]] || mkdir -p ${target_dir}
         cp -R ${source} ${target}
         chmod 777 ${target}
     fi
