@@ -189,7 +189,7 @@ parse () {
     #debug "Workdir: ${PWD}"
     if [[ -e Forkfile ]]; then
         local row=0
-        local forkfile=${PWD}/Forkfile.0
+        local forkfile=$(mktemp -t forkfile-XXXXXXXXXX)
         export Forkfile_from=rbn
         envsubst < Forkfile > ${forkfile}
         while IFS= read line || [[ -n "${line}" ]]; do
@@ -237,7 +237,7 @@ parse () {
                     ;;
             esac
         done < ${forkfile}
-        #[[ -f ${forkfile} ]] && rm ${forkfile}
+        [[ -f ${forkfile} ]] && rm ${forkfile}
     elif [[ "$1" == "LOCAL" ]] && [[ ! -z "${local_from}" ]]; then
         log "Write new 'Forkfile' on '${PWD}'"
         echo "FROM ${local_from} ${local_branch}" > Forkfile
