@@ -105,7 +105,8 @@ while true; do
     shift
 done
 
-echo $1
+
+echo $#
 
 #if [[ -z ]]
 
