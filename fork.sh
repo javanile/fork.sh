@@ -44,15 +44,16 @@ export FORKFILE_LOCAL_BASENAME=$(basename "${PWD}")
 usage () {
     echo "Usage: ./fork.sh [OPTION]..."
     echo ""
-    echo "Parse Forkfile and align from "
+    echo "Parse Forkfile to align other files by a remote source"
     echo ""
     echo "List of available options"
-    echo "  -f, --from REPOSITORY   Coverage of every"
-    echo "  -b, --branch BRANCH     "
+    echo "  -f, --from REPOSITORY   Set REPOSITORY as remote source"
+    echo "  -b, --branch BRANCH     Set BRANCH for remote source instead of default"
     echo "  -h, --help              Display this help and exit"
     echo "  -v, --version           Display current version"
     echo ""
     echo "Documentation can be found at https://github.com/javanile/fork.sh"
+    exit 1
 }
 
 ##
@@ -105,11 +106,10 @@ while true; do
     shift
 done
 
-
-echo $#
-
-#if [[ -z ]]
-
+if [[ $# -ne 0 ]]; then
+    echo "fork.sh: unrecognized option '${@}'"
+    usage
+fi
 
 if [[ ! -z "${local_branch}" ]] && [[ -z "${local_from}" ]]; then
     error "Required '--from' option with '--branch'"
