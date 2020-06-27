@@ -272,7 +272,7 @@ main () {
         local_from=${local}
     fi
     trace=$(mktemp -t fork-trace-XXXXXXXXXX)
-    #echo "Forkfile..."
+    echo "Forkfile analysis in progress..."
     echo "START ${workdir}" > ${trace}
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile start..." > /dev/null 2>&1 && true
