@@ -1,7 +1,7 @@
 # FORK.SH
 
 
-## Get started
+## Installation
 
 ```
 ## with cURL and BASH
@@ -18,10 +18,17 @@ docker run --rm -v $PWD:/app -ti javanile/fork.sh
 docker run --rm -v %cd%:/app -ti javanile/fork.sh
 ```
 
-## Url shortening
+## Usage
+
+### Forkfile magic variables
+
+-  `Forkfile_name`  
+
+
+## Shorturl
 
 ```bash
-curl -i https://git.io \
-     -F "url=https://raw.githubusercontent.com/javanile/fork.sh/master/fork.sh" \
-     -F "code=fork.sh"
+curl -i "https://git.io" \
+     -d "url=https://raw.githubusercontent.com/javanile/fork.sh/master/fork.sh" \
+     -d "code=fork.sh"
 ```
