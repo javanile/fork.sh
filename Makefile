@@ -6,15 +6,18 @@ PREFIX ?= /usr/local
 
 install:
 	install ./fork.sh $(PREFIX)/bin/$(BIN)
-tommaso:
-	ci siamo
 
 uninstall:
 	rm -f $(PREFIX)/bin/$(BIN)
 
-release:
+release: push
+
+push:
+	git config credential.helper 'cache --timeout=3600'
+	git pull
 	git add .
 	git commit -am "Release"
+	git commit -am "push"
 	git push
 	docker build -t javanile/fork.sh .
 	docker push javanile/fork.sh:latest
