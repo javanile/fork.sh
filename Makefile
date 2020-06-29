@@ -2,7 +2,6 @@
 
 BIN ?= fork.sh
 PREFIX ?= /usr/local
-## Acconti
 
 install:
 	install ./fork.sh $(PREFIX)/bin/$(BIN)
