@@ -52,6 +52,7 @@ usage () {
     echo "List of available options"
     echo "  -f, --from REPOSITORY   Set REPOSITORY as remote source"
     echo "  -b, --branch BRANCH     Set BRANCH for remote source instead of default"
+    echo "  -h, --hard              Display current version"
     echo "  -v, --verbose           Display current version"
     echo "  --version               Display current version"
     echo "  --help                  Display this help and exit"
@@ -94,21 +95,23 @@ case "$(uname -s)" in
         ;;
 esac
 
+hard=
 verbose=
 local_from=
 local_branch=
 package=^[A-Za-z_\.-]+/[A-Za-z_\.-]+$
-options=$(${getopt} -n fork.sh -o F:B:Vvh -l from:,branch:,verbose,version,help -- "$@")
+options=$(${getopt} -n fork.sh -o f:b:hv -l from:,branch:,hard,verbose,version,help -- "$@")
 
 eval set -- "${options}"
 
 while true; do
     case "$1" in
-        -F|--from) shift; local_from=$1 ;;
-        -B|--branch) shift; local_branch=$1 ;;
-        -V|--verbose) verbose=1 ;;
-        -v|--version) echo "FORK.SH version ${VERSION}"; exit ;;
-        -h|--help) usage; exit ;;
+        -f|--from) shift; local_from=$1 ;;
+        -b|--branch) shift; local_branch=$1 ;;
+        -h|--hard) hard=1 ;;
+        -v|--verbose) verbose=1 ;;
+        --version) echo "FORK.SH version ${VERSION}"; exit ;;
+        --help) usage; exit ;;
         --) shift; break ;;
     esac
     shift
@@ -133,7 +136,7 @@ clone () {
     [[ "$1" =~ ${package} ]] && repository=https://github.com/$1 || repository=$1
     branch=${2:-master}
     log "Opening '${repository}' due to validate integrity."
-    git ls-remote ${repository}
+    git ls-remote ${repository} | grep "${branch}"
     log "Fetching '$1' from '${branch}' branch."
     tmp=$(mktemp -d -t fork-clone-XXXXXXXXXX)
     cd ${tmp}
@@ -157,12 +160,14 @@ copy () {
     target=${workdir}/${target_name}
     target_dir="$(dirname "${target}")"
     override=$(grep -e "^COPY ${source}$" ${trace}) && true
-    if [[ ! -f "${target}" ]] || [[ ! -z "${override}" ]]; then
+    if [[ ! -f "${target}" ]] || [[ -n "${override}" ]] || [[ -n "${hard}" ]]; then
         log "Coping '${source}' to '${target}' from '${PWD}'"
         trace "COPY ${source}"
         [[ -d "${target_dir}" ]] || mkdir -p ${target_dir}
         cp -R ${source} ${target}
         chmod 777 ${target}
+    else
+        log "Ignoring copy '${source}', use '--hard' if you require it."
     fi
 }
 

@@ -22,4 +22,4 @@ push:
 	docker push javanile/fork.sh:latest
 
 tdd:
-	bash test/inheritance-test.sh
+	bash test/hard-test.sh
