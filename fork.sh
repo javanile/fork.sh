@@ -272,22 +272,22 @@ main () {
         exit 1
     fi
     local=$(git config --get remote.origin.url)
-    if [[ ! -z "${local_branch}" ]] && [[ -z "${local_from}" ]]; then
+    if [[ -n "${local_branch}" ]] && [[ -z "${local_from}" ]]; then
         debug "set local_from by default"
         local_from=${local}
     fi
     trace=$(mktemp -t fork-trace-XXXXXXXXXX)
     echo "Forkfile analysis in progress..."
-    echo "START ${workdir}" > ${trace}
+    echo "START ${workdir}" > "${trace}"
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile start..." > /dev/null 2>&1 && true
     export Forkfile_workdir=${workdir}
     export Forkfile_dirname=$(dirname "${workdir}")
     export Forkfile_name=$(basename "${workdir}")
-    parse LOCAL ${local} ${workdir}
+    parse LOCAL "${local}" "${workdir}"
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile close." > /dev/null 2>&1 && true
-    rm ${trace}
+    rm "${trace}"
     echo "Done."
 }
 

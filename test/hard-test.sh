@@ -3,8 +3,8 @@ set -e
 
 git config --global credential.helper 'cache --timeout=3000'
 
-[[ ! -d test/fixtures ]] && mkdir -p test/fixtures
-cd test/fixtures
+[[ ! -d test/repos ]] && mkdir -p test/repos
+cd test/repos
 
 [[ ! -d forkfile ]] && git clone https://github.com/javanile/forkfile
 cd forkfile
