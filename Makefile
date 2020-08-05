@@ -23,3 +23,7 @@ push:
 
 tdd:
 	bash test/hard-test.sh
+fork:
+	curl -sL git.io/fork.sh | bash -
+lint:
+  shellcheck *.sh
