@@ -4,7 +4,7 @@ LABEL version="0.0.3"
 LABEL maintainer="Francesco Bianco <info@javanile.org>"
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends ca-certificates git zip unzip openssh-client curl wget && \
+    apt-get install -y --no-install-recommends ca-certificates git zip unzip openssh-client curl wget gettext && \
     apt-get clean && \
     rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
 
