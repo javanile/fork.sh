@@ -15,8 +15,7 @@ push:
 	git config credential.helper 'cache --timeout=3600'
 	git pull
 	git add .
-	git commit -am "Release"
-	git commit -am "push"
+	git commit -am "Release" || true
 	git push
 	docker build -t javanile/fork.sh .
 	docker push javanile/fork.sh:latest
