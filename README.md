@@ -10,12 +10,12 @@ curl -sL git.io/fork.sh | bash -
 
 ```
 ## with Dorker for Linux/macOS
-docker run --rm -v $PWD:/app -ti javanile/fork.sh
+docker run --rm -v "$PWD:/app" -ti javanile/fork.sh
 ```
 
 ```
 ## with Dorker for Windows
-docker run --rm -v %CD%:/app -ti javanile/fork.sh
+docker run --rm -v "%CD%:/app" -ti javanile/fork.sh
 ```
 
 ## Usage
