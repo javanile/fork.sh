@@ -3,9 +3,16 @@
 
 ## Installation
 
+#### Linux
+
 ```
-## with cURL and BASH
+## Fork soft with cURL and BASH
 curl -sL git.io/fork.sh | bash -
+```
+
+```
+## Fork hard with cURL and BASH
+curl -sL git.io/fork.sh | bash -s -- --hard
 ```
 
 ```
@@ -14,9 +21,21 @@ docker run --rm -ti -v "$PWD:/app" javanile/fork.sh
 ```
 
 ```
+## with Dorker for Linux/macOS
+docker run --rm -ti -v "$PWD:/app" javanile/fork.sh --hard
+```
+
+
+```
 ## with Dorker for Windows
 docker run --rm -ti -v "%CD%:/app" javanile/fork.sh
 ```
+
+```
+## with Dorker for Windows
+docker run --rm -ti -v "%CD%:/app" javanile/fork.sh --hard
+```
+
 
 ## Usage
 
