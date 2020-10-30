@@ -60,14 +60,14 @@ fork_usage () {
 ##
 #
 ##
-log () {
+fork_log () {
     echo " ----> $@"
 }
 
 ##
 #
 ##
-error() {
+fork_error() {
     echo -e "${escape}[1m${escape}[31mERROR>${escape}[0m ${@}"
     exit 1
 }
@@ -75,7 +75,7 @@ error() {
 ##
 #
 ##
-debug () {
+fork_debug () {
     echo -e "${escape}[1m${escape}[33mDEBUG>${escape}[0m ${@}"
 }
 
@@ -121,14 +121,14 @@ fi
 ##
 #
 ##
-trace () {
+fork_trace () {
     echo $1 >> ${trace}
 }
 
 ##
 #
 ##
-clone () {
+fork_clone () {
     [[ "$1" =~ ${package} ]] && repository=https://github.com/$1 || repository=$1
     branch=${2:-master}
     log "Opening '${repository}' due to validate integrity."
@@ -148,7 +148,7 @@ clone () {
 ##
 #
 ##
-copy () {
+fork_copy() {
     source=${1}
     target_name=${2}
     [[ -z ${target_name} ]] && target_name=${1}
@@ -169,7 +169,7 @@ copy () {
 ##
 #
 ##
-merge () {
+fork_merge() {
     source=${1}
     target_name=${2}
     [[ -z ${target_name} ]] && target_name=${1}
@@ -184,9 +184,9 @@ merge () {
 ##
 #
 ##
-prototype() {
-    source=${1}
-    target_name=${2}
+fork_prototype() {
+    local source="${1}"
+    local target_name="${2}"
     [[ -z ${target_name} ]] && target_name=${1}
     target=${workdir}/${target_name}
     target_dir="$(dirname "${target}")"
@@ -205,7 +205,7 @@ prototype() {
 ##
 #
 ##
-parse() {
+fork_parse() {
     cd $3
     #debug "Workdir: ${PWD}"
     if [[ -e Forkfile ]]; then
@@ -218,49 +218,61 @@ parse() {
             [[ -z "${line}" ]] && continue
             [[ "${line::1}" == "#" ]] && continue
             instruction=$(echo ${line} | cut -d" " -f1)
-            case "$1_${instruction}" in
+            case "${1}_${instruction}" in
                 LOCAL_DUMP|REMOTE_DUMP)
-                    log DUMP "${@}"
+                    fork_log DUMP "${@}"
                     printenv | grep -E '^Forkfile_' | sort
                     ;;
                 LOCAL_DEBUG|REMOTE_DEBUG)
-                    log ${line:6}
+                    fork_log ${line:6}
                     ;;
                 LOCAL_FROM)
                     temp_pwd=${PWD}
                     if [[ -z "${local_from}" ]]; then
-                        clone ${line:5}
+                        fork_clone ${line:5}
                     else
-                        log "Ignore LOCAL FROM due to command line '--from' option."
-                        clone ${local_from} ${local_branch}
+                        fork_log "Ignore LOCAL FROM due to command line '--from' option."
+                        fork_clone ${local_from} ${local_branch}
                     fi
                     cd ${temp_pwd}
                     ;;
                 REMOTE_FROM)
                     temp_pwd=${PWD}
-                    clone ${line:5}
+                    fork_clone ${line:5}
                     cd ${temp_pwd}
                     ;;
                 LOCAL_COPY)
-                    log "Skip COPY in LOCAL Forkfile line ${row}"
+                    fork_log "Skip COPY in LOCAL Forkfile line ${row}"
                     ;;
                 REMOTE_COPY)
-                    copy ${line:5}
+                    fork_copy ${line:5}
                     ;;
                 LOCAL_MERGE)
-                    log "Skip MERGE in LOCAL Forkfile line ${row}"
+                    fork_log "Skip MERGE in LOCAL Forkfile line ${row}"
                     ;;
                 REMOTE_MERGE)
-                    merge ${line:10}
+                    fork_merge ${line:6}
                     ;;
                 LOCAL_PROTOTYPE)
-                    log "Skip PROTOTYPE in LOCAL Forkfile line ${row}"
+                    fork_log "Skip PROTOTYPE in LOCAL Forkfile line ${row}"
                     ;;
                 REMOTE_PROTOTYPE)
-                    prototype ${line:10}
+                    fork_prototype ${line:10}
+                    ;;
+                LOCAL_ENV)
+                    fork_log "Skip ENV in LOCAL Forkfile line ${row}"
+                    ;;
+                REMOTE_ENV)
+                    fork_env ${line:4}
+                    ;;
+                LOCAL_HAVE)
+                    fork_log "Skip HAVE in LOCAL Forkfile line ${row}"
+                    ;;
+                REMOTE_HAVE)
+                    fork_have ${line:5}
                     ;;
                 *)
-                    error "Forkfile parse error line ${row}: unknown instruction: ${instruction}"
+                    fork_error "Forkfile parse error line ${row}: unknown instruction: ${instruction}"
                     ;;
             esac
         done < ${forkfile}
@@ -269,10 +281,10 @@ parse() {
         log "Write new 'Forkfile' on '${PWD}'"
         echo "FROM ${local_from} ${local_branch}" > Forkfile
         temp_pwd=${PWD}
-        clone ${local_from} ${local_branch}
+        fork_clone ${local_from} ${local_branch}
         cd ${temp_pwd}
     else
-        log "Missing 'Forkfile' in '$3'."
+        fork_log "Missing 'Forkfile' in '$3'."
     fi
     #cd ${workdir}
 }
@@ -280,7 +292,7 @@ parse() {
 ##
 #
 ##
-main () {
+main() {
     if [[ -z "$(command -v git)" ]]; then
         echo "fork.sh: missing 'git' command on your system." >&2
         exit 1
