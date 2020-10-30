@@ -30,17 +30,17 @@
 
 set -ef
 
-#fatal() { echo "FATAL ERROR [$1]: $2"; }
-#trap 'fatal ${LINENO} "$BASH_COMMAND"' 0
+#debug() { echo "DEBUG ERROR [$1]: $2"; }
+#trap 'debug ${LINENO} "$BASH_COMMAND"' 0
 
-VERSION="0.1.0"
+VERSION="0.1.1"
 
 workdir=${PWD}
 
 ##
 #
 ##
-usage () {
+fork_usage () {
     echo "Usage: ./fork.sh [OPTION]..."
     echo ""
     echo "Parse Forkfile to align other files by a remote source"
