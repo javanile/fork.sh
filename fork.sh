@@ -30,12 +30,8 @@
 
 set -ef
 
-failure() {
-  local lineno=$1
-  local msg=$2
-  echo "Failed at $lineno: $msg"
-}
-#trap 'failure ${LINENO} "$BASH_COMMAND"' 0
+#fatal() { echo "FATAL ERROR [$1]: $2"; }
+#trap 'fatal ${LINENO} "$BASH_COMMAND"' 0
 
 VERSION="0.1.0"
 
@@ -189,7 +185,28 @@ merge () {
 ##
 #
 ##
-parse () {
+prototype() {
+    source=${1}
+    target_name=${2}
+    [[ -z ${target_name} ]] && target_name=${1}
+    target=${workdir}/${target_name}
+    target_dir="$(dirname "${target}")"
+    override=$(grep -e "^PROTOTYPE ${source}$" ${trace}) && true
+    if [[ ! -f "${target}" ]] || [[ -n "${override}" ]] || [[ -n "${hard}" ]]; then
+        log "Prototype '${source}' to '${target}' from '${PWD}'"
+        trace "PROTOTYPE ${source}"
+        [[ -d "${target_dir}" ]] || mkdir -p ${target_dir}
+        envsubst < ${source} > ${target}
+        chmod 777 ${target}
+    else
+        log "Ignoring prototype '${source}', use '--hard' if you require it."
+    fi
+}
+
+##
+#
+##
+parse() {
     cd $3
     #debug "Workdir: ${PWD}"
     if [[ -e Forkfile ]]; then
@@ -235,7 +252,13 @@ parse () {
                     log "Skip MERGE in LOCAL Forkfile line ${row}"
                     ;;
                 REMOTE_MERGE)
-                    merge ${line:6}
+                    merge ${line:10}
+                    ;;
+                LOCAL_PROTOTYPE)
+                    log "Skip PROTOTYPE in LOCAL Forkfile line ${row}"
+                    ;;
+                REMOTE_PROTOTYPE)
+                    prototype ${line:10}
                     ;;
                 *)
                     error "Forkfile parse error line ${row}: unknown instruction: ${instruction}"
@@ -284,6 +307,7 @@ main () {
     export Forkfile_workdir=${workdir}
     export Forkfile_dirname=$(dirname "${workdir}")
     export Forkfile_name=$(basename "${workdir}")
+    export FORK_NAME="$(basename "${workdir}")"
     parse LOCAL "${local}" "${workdir}"
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile close." > /dev/null 2>&1 && true

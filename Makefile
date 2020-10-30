@@ -20,11 +20,17 @@ push:
 	docker build -t javanile/fork.sh .
 	docker push javanile/fork.sh:latest
 
-tdd:
-	bash test/hard-test.sh
-
 fork:
 	curl -sL git.io/fork.sh | bash -
 
 lint:
 	shellcheck *.sh
+
+## -------
+## Testing
+## -------
+test-hard:
+	bash test/hard-test.sh
+
+test-prototype:
+	bash test/prototype-test.sh

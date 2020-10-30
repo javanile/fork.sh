@@ -8,7 +8,7 @@ cd test/repos
 
 [[ ! -d forkfile-test1 ]] && git clone https://gitlab.com/javanile/fixtures/forkfile-test1.git
 cd forkfile-test1
-date > RELEASE
+echo "forkfile $(date)" > HARD
 git add .
 git commit -am "Forkfile"
 git push
@@ -24,9 +24,13 @@ cd ..
 
 [[ ! -d forkfile-test3 ]] && git clone https://gitlab.com/javanile/fixtures/forkfile-test3.git
 cd forkfile-test3
-date > RELEASE
+
 echo ""
 echo ""
 echo "====[ FORK.SH ]===="
-../../../fork.sh
-cd ..
+echo "HARD: Test" > HARD
+../../../fork.sh --hard
+
+echo ""
+echo "====[ TESTING ]===="
+diff HARD ../forkfile/HARD
