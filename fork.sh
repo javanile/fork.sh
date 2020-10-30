@@ -67,7 +67,7 @@ log () {
 ##
 #
 ##
-error () {
+error() {
     echo -e "${escape}[1m${escape}[31mERROR>${escape}[0m ${@}"
     exit 1
 }
@@ -134,16 +134,15 @@ clone () {
     log "Opening '${repository}' due to validate integrity."
     git ls-remote ${repository} | grep "${branch}"
     log "Fetching '$1' from '${branch}' branch."
-    tmp=$(mktemp -d -t fork-clone-XXXXXXXXXX)
-    cd ${tmp}
-    #git clone -b ${branch} $1 LOCAL > /dev/null 2>&1 && true
-    git clone -b ${branch} ${repository} LOCAL || true
-    if [[ -d "${tmp}/LOCAL" ]]; then
-        parse REMOTE $1 ${tmp}/LOCAL
+    local tmpdir=$(mktemp -d -t fork-clone-dir-XXXXXXXXXX)
+    cd ${tmpdir}
+    git clone -q -b ${branch} ${repository} LOCAL || true
+    if [[ -d "${tmpdir}/LOCAL" ]]; then
+        parse REMOTE $1 ${tmpdir}/LOCAL
     else
-        error ""
+        error "Problem while creating: ${tmpdir}/LOCAL"
     fi
-    rm -fr ${tmp}
+    rm -fr ${tmpdir} ${tmpout}
 }
 
 ##

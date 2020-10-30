@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 TMPDIR="${PWD}"
 
@@ -36,3 +37,11 @@ cd "${TMPDIR}"
 echo ""
 echo ""
 echo "====[ FORK.SH ]===="
+
+test() {
+    echo ""
+    echo "====[ TESTING ]===="
+    echo ">>> ${@}"
+    ${@}
+    echo "OK."
+}

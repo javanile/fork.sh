@@ -29,8 +29,14 @@ lint:
 ## -------
 ## Testing
 ## -------
+test: test-hard test-inheritance test-prototype
+	@echo "FORK.SH Test Done."
+
 test-hard:
-	bash test/hard-test.sh
+	@bash test/hard-test.sh
+
+test-inheritance:
+	@bash test/hard-test.sh
 
 test-prototype:
-	bash test/prototype-test.sh
+	@bash test/prototype-test.sh
