@@ -251,7 +251,7 @@ parse() {
                     log "Skip MERGE in LOCAL Forkfile line ${row}"
                     ;;
                 REMOTE_MERGE)
-                    merge ${line:10}
+                    merge ${line:6}
                     ;;
                 LOCAL_PROTOTYPE)
                     log "Skip PROTOTYPE in LOCAL Forkfile line ${row}"
