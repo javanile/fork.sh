@@ -29,7 +29,7 @@ lint:
 ## -------
 ## Testing
 ## -------
-test: test-hard test-inheritance test-prototype
+test: test-hard test-inheritance test-prototype test-source test-update
 	@echo "FORK.SH Test Done."
 
 test-hard:
