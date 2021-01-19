@@ -340,14 +340,14 @@ main() {
     echo "Forkfile scanning..."
     echo "START ${workdir}" > "${trace}"
     git add . > /dev/null 2>&1 && true
-    git commit -am "Forkfile start..." > /dev/null 2>&1 && true
+    git commit -am "Forkfile: init" > /dev/null 2>&1 && true
     export Forkfile_workdir=${workdir}
     export Forkfile_dirname=$(dirname "${workdir}")
     export Forkfile_name=$(basename "${workdir}")
     export FORK_NAME="$(basename "${workdir}")"
     fork_parse LOCAL "${local}" "${workdir}"
     git add . > /dev/null 2>&1 && true
-    git commit -am "Forkfile close." > /dev/null 2>&1 && true
+    git commit -am "Forkfile: done" > /dev/null 2>&1 && true
     if [[ -n "${local_update}" ]]; then
         git push --force
         rm -fr "${workdir}"
