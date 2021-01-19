@@ -331,6 +331,10 @@ main() {
     fork_parse LOCAL "${local}" "${workdir}"
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile close." > /dev/null 2>&1 && true
+    if [[ -n "${local_update}" ]]; then
+        git push --force
+        rm -fr "${workdir}"
+    fi
     rm "${trace}"
     echo "Done."
 }
