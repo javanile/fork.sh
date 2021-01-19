@@ -3,4 +3,4 @@ set -e
 
 source ./test/bootstrap.sh
 
-bash ./fork.sh --update https://gitlab.com/javanile/fixtures/forkfile-test1.git
+bash ./fork.sh --update https://gitlab.com/javanile/fixtures/forkfile-test3.git
