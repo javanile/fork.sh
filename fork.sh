@@ -328,7 +328,7 @@ main() {
     export Forkfile_dirname=$(dirname "${workdir}")
     export Forkfile_name=$(basename "${workdir}")
     export FORK_NAME="$(basename "${workdir}")"
-    parse LOCAL "${local}" "${workdir}"
+    fork_parse LOCAL "${local}" "${workdir}"
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile close." > /dev/null 2>&1 && true
     rm "${trace}"
