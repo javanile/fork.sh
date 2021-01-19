@@ -38,7 +38,7 @@ VERSION="0.1.1"
 workdir=${PWD}
 
 ##
-#
+# Print-out usage message and exit
 ##
 fork_usage () {
     echo "Usage: ./fork.sh [OPTION]..."
@@ -46,12 +46,13 @@ fork_usage () {
     echo "Parse Forkfile to align other files by a remote source"
     echo ""
     echo "List of available options"
-    echo "  -f, --from REPOSITORY   Set REPOSITORY as remote source"
-    echo "  -b, --branch BRANCH     Set BRANCH for remote source instead of default"
-    echo "  -h, --hard              Display current version"
-    echo "  -v, --verbose           Display current version"
-    echo "  --version               Display current version"
-    echo "  --help                  Display this help and exit"
+    echo "  -f, --from REPOSITORY    Set REPOSITORY as remote source"
+    echo "  -u, --update REPOSITORY  Update REPOSITORY instead current directory"
+    echo "  -b, --branch BRANCH      Set BRANCH for remote source instead of default"
+    echo "  -h, --hard               Display current version"
+    echo "  -v, --verbose            Display current version"
+    echo "  --version                Display current version"
+    echo "  --help                   Display this help and exit"
     echo ""
     echo "Documentation can be found at https://github.com/javanile/fork.sh"
     exit 1
@@ -95,14 +96,16 @@ hard=
 verbose=
 local_from=
 local_branch=
+local_update=
 package=^[A-Za-z_\.-]+/[A-Za-z_\.-]+$
-options=$(${getopt} -n fork.sh -o f:b:hv -l from:,branch:,hard,verbose,version,help -- "$@")
+options=$(${getopt} -n fork.sh -o f:u:b:hv -l from:,update:,branch:,hard,verbose,version,help -- "$@")
 
 eval set -- "${options}"
 
 while true; do
     case "$1" in
         -f|--from) shift; local_from=$1 ;;
+        -u|--update) shift; local_update=$1 ;;
         -b|--branch) shift; local_branch=$1 ;;
         -h|--hard) hard=1 ;;
         -v|--verbose) verbose=1 ;;
@@ -300,6 +303,12 @@ main() {
     if [[ -z "$(command -v envsubst)" ]]; then
         echo "fork.sh: missing 'envsubst' command on your system." >&2
         exit 1
+    fi
+    if [[ -n "${local_update}" ]]; then
+        workdir="$(mktemp -d -t fork-update-dir-XXXXXXXXXX)/UPDATE"
+        #git clone -q -b ${branch} ${local_update} ${workdir} || true
+        git clone -q "${local_update}" "${workdir}" || true
+        [[ -d "${workdir}" ]] || error "Problem while creating: ${local_update}"
     fi
     if [[ ! -d ${workdir}/.git ]]; then
         echo "fork.sh: not a git repository." >&2
