@@ -134,14 +134,14 @@ fork_trace () {
 fork_clone () {
     [[ "$1" =~ ${package} ]] && repository=https://github.com/$1 || repository=$1
     branch=${2:-master}
-    log "Opening '${repository}' due to validate integrity."
+    fork_log "Opening '${repository}' due to validate integrity."
     git ls-remote ${repository} | grep "${branch}"
-    log "Fetching '$1' from '${branch}' branch."
+    fork_log "Fetching '$1' from '${branch}' branch."
     local tmpdir=$(mktemp -d -t fork-clone-dir-XXXXXXXXXX)
     cd ${tmpdir}
     git clone -q -b ${branch} ${repository} LOCAL || true
     if [[ -d "${tmpdir}/LOCAL" ]]; then
-        parse REMOTE $1 ${tmpdir}/LOCAL
+        fork_parse REMOTE $1 ${tmpdir}/LOCAL
     else
         error "Problem while creating: ${tmpdir}/LOCAL"
     fi
@@ -159,13 +159,13 @@ fork_copy() {
     target_dir="$(dirname "${target}")"
     override=$(grep -e "^COPY ${source}$" ${trace}) && true
     if [[ ! -f "${target}" ]] || [[ -n "${override}" ]] || [[ -n "${hard}" ]]; then
-        log "Coping '${source}' to '${target}' from '${PWD}'"
-        trace "COPY ${source}"
+        fork_log "Coping '${source}' to '${target}' from '${PWD}'"
+        fork_trace "COPY ${source}"
         [[ -d "${target_dir}" ]] || mkdir -p ${target_dir}
         cp -R ${source} ${target}
         chmod 777 ${target}
     else
-        log "Ignoring copy '${source}', use '--hard' if you require it."
+        fork_log "Ignoring copy '${source}', use '--hard' if you require it."
     fi
 }
 
@@ -177,7 +177,7 @@ fork_merge() {
     target_name=${2}
     [[ -z ${target_name} ]] && target_name=${1}
     target=${workdir}/${target_name}
-    log "Merging '${source}' to '${target}' from '${PWD}'"
+    fork_log "Merging '${source}' to '${target}' from '${PWD}'"
     tmp=$(mktemp -t merge-diff-XXXXXXXXXX)
     diff --line-format %L ${target} ${source} > ${tmp} || true
     cp ${tmp} ${target}
@@ -195,13 +195,13 @@ fork_prototype() {
     target_dir="$(dirname "${target}")"
     override=$(grep -e "^PROTOTYPE ${source}$" ${trace}) && true
     if [[ ! -f "${target}" ]] || [[ -n "${override}" ]] || [[ -n "${hard}" ]]; then
-        log "Prototype '${source}' to '${target}' from '${PWD}'"
-        trace "PROTOTYPE ${source}"
+        fork_log "Prototype '${source}' to '${target}' from '${PWD}'"
+        fork_trace "PROTOTYPE ${source}"
         [[ -d "${target_dir}" ]] || mkdir -p ${target_dir}
         envsubst < ${source} > ${target}
         chmod 777 ${target}
     else
-        log "Ignoring prototype '${source}', use '--hard' if you require it."
+        fork_log "Ignoring prototype '${source}', use '--hard' if you require it."
     fi
 }
 
@@ -281,7 +281,7 @@ fork_parse() {
         done < ${forkfile}
         [[ -f ${forkfile} ]] && rm ${forkfile}
     elif [[ "$1" == "LOCAL" ]] && [[ ! -z "${local_from}" ]]; then
-        log "Write new 'Forkfile' on '${PWD}'"
+        fork_log "Write new 'Forkfile' on '${PWD}'"
         echo "FROM ${local_from} ${local_branch}" > Forkfile
         temp_pwd=${PWD}
         fork_clone ${local_from} ${local_branch}
