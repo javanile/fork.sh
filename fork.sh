@@ -62,7 +62,7 @@ fork_usage () {
 #
 ##
 fork_log () {
-    echo " ----> $@"
+    echo " ---> $@"
 }
 
 ##
@@ -134,8 +134,9 @@ fork_trace () {
 fork_clone () {
     [[ "$1" =~ ${package} ]] && repository=https://github.com/$1 || repository=$1
     branch=${2:-master}
-    fork_log "Opening '${repository}' due to validate integrity."
-    git ls-remote ${repository} | grep "${branch}"
+    fork_log "Check '${repository}' due to validate integrity."
+    echo -n "Refs: "
+    git ls-remote ${repository} | grep "${branch}" | tr '\t' ' '
     fork_log "Fetching '$1' from '${branch}' branch."
     local tmpdir=$(mktemp -d -t fork-clone-dir-XXXXXXXXXX)
     cd ${tmpdir}
@@ -179,6 +180,7 @@ fork_merge() {
     target=${workdir}/${target_name}
     fork_log "Merging '${source}' to '${target}' from '${PWD}'"
     tmp=$(mktemp -t merge-diff-XXXXXXXXXX)
+    [[ -f "${target}" ]] || touch "${target}"
     diff --line-format %L ${target} ${source} > ${tmp} || true
     cp ${tmp} ${target}
     rm ${tmp}
@@ -208,8 +210,23 @@ fork_prototype() {
 ##
 #
 ##
+fork_source() {
+    local source="${workdir}/${1}"
+    if [[ -f "${source}" ]]; then
+        fork_log "Sourcing '${source}'."
+        source "${source}"
+        export $(cut -d= -f1 "${source}")
+    else
+        fork_log "Ignore source '${source}'."
+    fi
+}
+
+##
+#
+##
 fork_parse() {
     cd $3
+    local temp_pwd=${PWD}
     #debug "Workdir: ${PWD}"
     if [[ -e Forkfile ]]; then
         local row=0
@@ -262,11 +279,11 @@ fork_parse() {
                 REMOTE_PROTOTYPE)
                     fork_prototype ${line:10}
                     ;;
-                LOCAL_ENV)
-                    fork_log "Skip ENV in LOCAL Forkfile line ${row}"
+                LOCAL_SOURCE)
+                    fork_log "Skip SOURCE in LOCAL Forkfile line ${row}"
                     ;;
-                REMOTE_ENV)
-                    fork_env ${line:4}
+                REMOTE_SOURCE)
+                    fork_source ${line:7}
                     ;;
                 LOCAL_HAVE)
                     fork_log "Skip HAVE in LOCAL Forkfile line ${row}"
@@ -320,7 +337,7 @@ main() {
         local_from=${local}
     fi
     trace=$(mktemp -t fork-trace-XXXXXXXXXX)
-    echo "Forkfile analysis in progress..."
+    echo "Forkfile scanning..."
     echo "START ${workdir}" > "${trace}"
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile start..." > /dev/null 2>&1 && true

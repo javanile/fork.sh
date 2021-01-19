@@ -41,5 +41,8 @@ test-inheritance:
 test-prototype:
 	@bash test/prototype-test.sh
 
+test-source:
+	@bash test/source-test.sh
+
 test-update:
 	@bash test/update-test.sh
