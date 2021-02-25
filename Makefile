@@ -38,6 +38,9 @@ test-hard:
 test-inheritance:
 	@bash test/hard-test.sh
 
+test-move:
+	@bash test/move-test.sh
+
 test-prototype:
 	@bash test/prototype-test.sh
 

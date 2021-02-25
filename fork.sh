@@ -69,7 +69,7 @@ fork_log () {
 #
 ##
 fork_error() {
-    echo -e "${escape}[1m${escape}[31mERROR>${escape}[0m ${@}"
+    echo -e "${escape}[1m${escape}[31m[ERROR]${escape}[0m ${@}"
     exit 1
 }
 
@@ -129,18 +129,22 @@ fork_trace () {
 }
 
 ##
-#
+# $1 - Arguments of FROM statement
 ##
-fork_clone () {
-    [[ "$1" =~ ${package} ]] && repository=https://github.com/$1 || repository=$1
-    branch=${2:-master}
-    fork_log "Check '${repository}' due to validate integrity."
-    echo -n "Refs: "
-    git ls-remote ${repository} | grep "${branch}" | tr '\t' ' '
-    fork_log "Fetching '$1' from '${branch}' branch."
+fork_clone() {
+    branch="$(echo "$1?" | cut -d'?' -f2)"
+    repository="$(echo "$1?" | cut -d'?' -f1)"
+    [[ -n "$2" ]] && branch="$2"
+    [[ "${repository}" =~ ${package} ]] && repository=https://github.com/${repository}
+    branch_info="'${branch}'"
+    branch_option="-b ${branch}"
+    [[ -z "${branch}" ]] && branch_info="default" && branch_option=""
+    fork_log "Check '${repository}' due to integrity."
+    [[ -n "${verbose}" ]] && echo -n "Refs: " && git ls-remote ${repository} | grep "${branch}" | tr '\t' ' '
+    fork_log "Fetch '${repository}' from ${branch_info} branch."
     local tmpdir=$(mktemp -d -t fork-clone-dir-XXXXXXXXXX)
     cd ${tmpdir}
-    git clone -q -b ${branch} ${repository} LOCAL || true
+    git clone -q ${branch_option} "${repository}" LOCAL || true
     if [[ -d "${tmpdir}/LOCAL" ]]; then
         fork_parse REMOTE $1 ${tmpdir}/LOCAL
     else
@@ -167,6 +171,22 @@ fork_copy() {
         chmod 777 ${target}
     else
         fork_log "Ignoring copy '${source}', use '--hard' if you require it."
+    fi
+}
+
+##
+#
+##
+fork_move() {
+    source=${1}
+    target_name=${2}
+    if [[ -n "${2}" ]]; then
+        target=${workdir}/${target_name}/
+        target_dir="$(dirname "${target}")/"
+        fork_log "Move '${source}' to '${target}' from '${PWD}'"
+        echo mv "${source}" "${target_dir}"
+    else
+        fork_log "Ignore move '${source}' due to missing destination."
     fi
 }
 
@@ -222,7 +242,9 @@ fork_source() {
 }
 
 ##
-#
+# $1 - Kind of source LOCAL or REMOTE
+# $2 - Source identifier current path for LOCAL, repository FROM for REMOTE
+# $3 - Working directory to process the parsing
 ##
 fork_parse() {
     cd $3
@@ -291,8 +313,14 @@ fork_parse() {
                 REMOTE_HAVE)
                     fork_have ${line:5}
                     ;;
+                LOCAL_MOVE)
+                    fork_log "Skip MOVE in LOCAL Forkfile line ${row}"
+                    ;;
+                REMOTE_MOVE)
+                    fork_move ${line:5}
+                    ;;
                 *)
-                    fork_error "Forkfile parse error line ${row}: unknown instruction: ${instruction}"
+                    fork_error "Forkfile parse error line ${row}: unknown instruction: ${instruction} on '$2'"
                     ;;
             esac
         done < ${forkfile}
@@ -306,7 +334,6 @@ fork_parse() {
     else
         fork_log "Missing 'Forkfile' in '$3'."
     fi
-    #cd ${workdir}
 }
 
 ##
