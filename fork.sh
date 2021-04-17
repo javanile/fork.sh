@@ -207,7 +207,8 @@ fork_merge() {
 }
 
 ##
-#
+# PROTOTYPE <remote_file> <local_file>
+# Use a <remote_file> as template to create new <local_file> into LOCAL with environment variables replacement.
 ##
 fork_prototype() {
     local source="${1}"
