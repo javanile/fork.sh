@@ -369,8 +369,7 @@ main() {
         [[ -d "${workdir}" ]] || error "Problem while creating: ${local_update}"
     fi
     if [[ ! -d ${workdir}/.git ]]; then
-        echo "fork.sh: not a git repository." >&2
-        exit 1
+        fork_exit 1 "This directory does not appear to be a git repository"
     fi
     local=$(git config --get remote.origin.url)
     if [[ -n "${local_branch}" ]] && [[ -z "${local_from}" ]]; then
