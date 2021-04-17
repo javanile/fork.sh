@@ -33,7 +33,7 @@ set -ef
 #debug() { echo "DEBUG ERROR [$1]: $2"; }
 #trap 'debug ${LINENO} "$BASH_COMMAND"' 0
 
-VERSION="0.1.1"
+VERSION="0.2.0"
 
 workdir=${PWD}
 
@@ -339,6 +339,14 @@ fork_parse() {
 ##
 #
 ##
+fork_exit() {
+    echo "$2"
+    exit "$1"
+}
+
+##
+#
+##
 main() {
     if [[ -z "$(command -v git)" ]]; then
         echo "fork.sh: missing 'git' command on your system." >&2
@@ -362,6 +370,9 @@ main() {
     if [[ -n "${local_branch}" ]] && [[ -z "${local_from}" ]]; then
         debug "set local_from by default"
         local_from=${local}
+    fi
+    if [[ ! -f Forkfile ]] && [[ ! -f Forkfile.conf ]] && [[ -z "${local_from}" ]]; then
+        fork_exit 1 "Could not find Forkfile or Forkfile.conf in this directory"
     fi
     trace=$(mktemp -t fork-trace-XXXXXXXXXX)
     echo "Forkfile scanning..."
