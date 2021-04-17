@@ -259,6 +259,7 @@ fork_parse() {
             ((row=row+1))
             [[ -z "${line}" ]] && continue
             [[ "${line::1}" == "#" ]] && continue
+            #echo ${line}
             instruction=$(echo ${line} | cut -d" " -f1)
             case "${1}_${instruction}" in
                 LOCAL_DUMP|REMOTE_DUMP)
@@ -326,7 +327,7 @@ fork_parse() {
         done < ${forkfile}
         [[ -f ${forkfile} ]] && rm ${forkfile}
     elif [[ "$1" == "LOCAL" ]] && [[ ! -z "${local_from}" ]]; then
-        fork_log "Write new 'Forkfile' on '${PWD}'"
+        fork_info "Creating Forkfile on ${PWD}"
         echo "FROM ${local_from} ${local_branch}" > Forkfile
         temp_pwd=${PWD}
         fork_clone ${local_from} ${local_branch}
@@ -339,8 +340,15 @@ fork_parse() {
 ##
 #
 ##
+fork_info() {
+    echo "$1"
+}
+
+##
+#
+##
 fork_exit() {
-    echo "$2"
+    echo "$2" >&2
     exit "$1"
 }
 
@@ -349,12 +357,10 @@ fork_exit() {
 ##
 main() {
     if [[ -z "$(command -v git)" ]]; then
-        echo "fork.sh: missing 'git' command on your system." >&2
-        exit 1
+        fork_exit 1 "Missing git command on your system."
     fi
     if [[ -z "$(command -v envsubst)" ]]; then
-        echo "fork.sh: missing 'envsubst' command on your system." >&2
-        exit 1
+        fork_exit 1 "Missing envsubst command on your system."
     fi
     if [[ -n "${local_update}" ]]; then
         workdir="$(mktemp -d -t fork-update-dir-XXXXXXXXXX)/UPDATE"
