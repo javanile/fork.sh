@@ -381,7 +381,7 @@ main() {
         fork_exit 1 "Could not find Forkfile or Forkfile.conf in this directory"
     fi
     trace=$(mktemp -t fork-trace-XXXXXXXXXX)
-    echo "Forkfile scanning..."
+    #echo "Forkfile scanning..."
     echo "START ${workdir}" > "${trace}"
     git add . > /dev/null 2>&1 && true
     git commit -am "Forkfile: init" > /dev/null 2>&1 && true
