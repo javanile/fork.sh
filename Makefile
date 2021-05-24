@@ -36,7 +36,10 @@ test-hard:
 	@bash test/hard-test.sh
 
 test-inheritance:
-	@bash test/hard-test.sh
+	@bash test/inheritance-test.sh
+
+test-missing-forkfile:
+	@bash test/missing-forkfile-test.sh
 
 test-move:
 	@bash test/move-test.sh
