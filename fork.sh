@@ -177,6 +177,19 @@ fork_copy() {
 ##
 #
 ##
+fork_touch() {
+    target_name=${1}
+    target=${workdir}/${target_name}
+    target_dir="$(dirname "${target}")"
+    fork_log "Touch '${target}' from '${PWD}'"
+    [[ -d "${target_dir}" ]] || mkdir -p "${target_dir}"
+    touch ${target}
+    chmod 777 ${target}
+}
+
+##
+#
+##
 fork_move() {
     source=${1}
     target_name=${2}
@@ -290,6 +303,12 @@ fork_parse() {
                     ;;
                 REMOTE_COPY)
                     fork_copy ${line:5}
+                    ;;
+                LOCAL_TOUCH)
+                    fork_log "Skip COPY in LOCAL Forkfile line ${row}"
+                    ;;
+                REMOTE_TOUCH)
+                    fork_touch ${line:6}
                     ;;
                 LOCAL_MERGE)
                     fork_log "Skip MERGE in LOCAL Forkfile line ${row}"
