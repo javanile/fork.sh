@@ -334,12 +334,12 @@ fork_parse() {
                 REMOTE_HAVE)
                     fork_have ${line:5}
                     ;;
-                LOCAL_MOVE)
-                    fork_log "Skip MOVE in LOCAL Forkfile line ${row}"
-                    ;;
-                REMOTE_MOVE)
-                    fork_move ${line:5}
-                    ;;
+                #LOCAL_MOVE)
+                #    fork_log "Skip MOVE in LOCAL Forkfile line ${row}"
+                #    ;;
+                #REMOTE_MOVE)
+                #    fork_move ${line:5}
+                #    ;;
                 *)
                     fork_error "Forkfile parse error line ${row}: unknown instruction: ${instruction} on '$2'"
                     ;;
