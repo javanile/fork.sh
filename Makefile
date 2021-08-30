@@ -50,5 +50,8 @@ test-prototype:
 test-source:
 	@bash test/source-test.sh
 
+test-touch:
+	@bash test/touch-test.sh
+
 test-update:
 	@bash test/update-test.sh
