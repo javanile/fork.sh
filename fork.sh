@@ -33,7 +33,7 @@ set -ef
 #debug() { echo "DEBUG ERROR [$1]: $2"; }
 #trap 'debug ${LINENO} "$BASH_COMMAND"' 0
 
-VERSION="0.2.0"
+VERSION="0.3.0"
 
 workdir=${PWD}
 
@@ -177,6 +177,27 @@ fork_copy() {
 ##
 #
 ##
+fork_dircopy() {
+    source=${1}
+    target_name=${2}
+    [[ -z ${target_name} ]] && target_name=${1}
+    target=${workdir}/${target_name}
+    target_dir="$(dirname "${target}")"
+    override=$(grep -e "^DIRCOPY ${source}$" ${trace}) && true
+    if [[ ! -d "${target}" ]] || [[ -n "${override}" ]] || [[ -n "${hard}" ]]; then
+        fork_log "Coping directory '${source}' to '${target}' from '${PWD}'"
+        fork_trace "DIRCOPY ${source}"
+        [[ -d "${target_dir}" ]] || mkdir -p ${target_dir}
+        cp -R ${source} ${target}
+        chmod 777 ${target}
+    else
+        fork_log "Ignoring copy '${source}', use '--hard' if you require it."
+    fi
+}
+
+##
+#
+##
 fork_touch() {
     target_name=${1}
     target=${workdir}/${target_name}
@@ -303,6 +324,12 @@ fork_parse() {
                     ;;
                 REMOTE_COPY)
                     fork_copy ${line:5}
+                    ;;
+                LOCAL_DIRCOPY)
+                    fork_log "Skip COPY in LOCAL Forkfile line ${row}"
+                    ;;
+                REMOTE_DIRCOPY)
+                    fork_dircopy ${line:8}
                     ;;
                 LOCAL_TOUCH)
                     fork_log "Skip COPY in LOCAL Forkfile line ${row}"

@@ -55,3 +55,6 @@ test-touch:
 
 test-update:
 	@bash test/update-test.sh
+
+test-dircopy:
+	@bash test/dircopy-test.sh
