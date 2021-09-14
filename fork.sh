@@ -33,7 +33,7 @@ set -ef
 #debug() { echo "DEBUG ERROR [$1]: $2"; }
 #trap 'debug ${LINENO} "$BASH_COMMAND"' 0
 
-VERSION="0.3.0"
+VERSION="0.3.1"
 
 workdir=${PWD}
 
