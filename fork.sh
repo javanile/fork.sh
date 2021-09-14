@@ -33,7 +33,7 @@ set -ef
 #debug() { echo "DEBUG ERROR [$1]: $2"; }
 #trap 'debug ${LINENO} "$BASH_COMMAND"' 0
 
-VERSION="0.3.0"
+VERSION="0.3.1"
 
 workdir=${PWD}
 
@@ -188,7 +188,7 @@ fork_dircopy() {
         fork_log "Coping directory '${source}' to '${target}' from '${PWD}'"
         fork_trace "DIRCOPY ${source}"
         [[ -d "${target_dir}" ]] || mkdir -p ${target_dir}
-        cp -R ${source} ${target}
+        [[ -d "${target}" ]] && cp -TRf ${source} ${target} || cp -Rf ${source} ${target}
         chmod 777 ${target}
     else
         fork_log "Ignoring copy '${source}', use '--hard' if you require it."
