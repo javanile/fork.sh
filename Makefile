@@ -3,6 +3,9 @@
 BIN ?= fork.sh
 PREFIX ?= /usr/local
 
+init:
+	echo "AA"
+
 install:
 	install ./fork.sh $(PREFIX)/bin/$(BIN)
 

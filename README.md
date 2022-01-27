@@ -44,6 +44,18 @@ docker run --rm -ti -v "%CD%:/app" javanile/fork.sh --hard
 -  `Forkfile_name`  
 
 
+## Contribute
+
+### Development
+
+```shell
+git clone https://github.com/javanile/fork.sh.git
+cd fork.sh
+make init
+make test
+```
+
+
 ## Shorturl
 
 ```bash
