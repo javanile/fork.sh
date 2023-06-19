@@ -83,7 +83,7 @@ fork_debug () {
 case "$(uname -s)" in
     Darwin*)
         getdep=''
-        getopt='/usr/local/opt/gnu-getopt/bin/getopt'
+        getopt='/opt/local/bin/getopt'
         escape='\x1B'
         ;;
     Linux|*)
