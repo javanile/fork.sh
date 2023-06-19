@@ -17,7 +17,7 @@ push:
 	git add .
 	git commit -am "Release" || true
 	git push
-	docker build -t javanile/fork.sh .
+	docker build -t javanile/fork.sh:macos .
 	docker push javanile/fork.sh:macos
 
 fork:
