@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:buster
 
 LABEL version="0.0.3"
 LABEL maintainer="Francesco Bianco <info@javanile.org>"
